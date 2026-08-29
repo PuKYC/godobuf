@@ -1887,9 +1887,9 @@ class Translator:
 	func generate_gdscript_type(field: Analysis.ASTField, prefix_options: PrefixOptions) -> String:
 		if field.field_type == Analysis.FIELD_TYPE.MESSAGE:
 			return resolve_type_reference(field.type_class_id, prefix_options)
-		return generate_gdscript_simple_type(field)
+		return generate_gdscript_simple_type(field, prefix_options)
 
-	func generate_gdscript_simple_type(field: Analysis.ASTField) -> String:
+	func generate_gdscript_simple_type(field: Analysis.ASTField, prefix_options: PrefixOptions) -> String:
 		if field.field_type == Analysis.FIELD_TYPE.INT32:
 			return "int"
 		elif field.field_type == Analysis.FIELD_TYPE.SINT32:
@@ -1905,7 +1905,7 @@ class Translator:
 		elif field.field_type == Analysis.FIELD_TYPE.BOOL:
 			return "bool"
 		elif field.field_type == Analysis.FIELD_TYPE.ENUM:
-			return ""
+			return resolve_type_reference(field.type_class_id, prefix_options)
 		elif field.field_type == Analysis.FIELD_TYPE.FIXED32:
 			return "int"
 		elif field.field_type == Analysis.FIELD_TYPE.SFIXED32:
@@ -2100,7 +2100,7 @@ class Translator:
 			nesting -= 1
 			for i in range(field_table.size()):
 				if field_table[i].parent_class_id == f.type_class_id && field_table[i].name == "value":
-					var gd_type: String = generate_gdscript_simple_type(field_table[i])
+					var gd_type: String = generate_gdscript_simple_type(field_table[i], prefix_options)
 					var return_type: String = " -> " + the_class_name
 					var value_return_type: String = ""
 					if gd_type != "":
@@ -2165,7 +2165,7 @@ class Translator:
 						nesting -= 1
 					break
 		else:
-			var gd_type: String = generate_gdscript_simple_type(f)
+			var gd_type: String = generate_gdscript_simple_type(f, prefix_options)
 			var return_type: String = ""
 			var argument_type: String = ""
 			if gd_type != "":
